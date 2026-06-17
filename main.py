@@ -1,81 +1,39 @@
-from src.rnn import repetitive_nearest_neighbor
-from src.sa import simulated_annealing
-from src.tsp import load_instance
+import os
+
+from src.config import FIGURES_DIR, RAW_CSV, RESULTS_DIR, SUMMARY_CSV
+from src.experiments import run_all_experiments
+from src.visualization import generate_all_figures
 
 
 def main():
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    os.makedirs(FIGURES_DIR, exist_ok=True)
 
-    print("=" * 50)
-    print("TSP-RNN-SA")
-    print("=" * 50)
+    print("=" * 55)
+    print("TSP-RNN-SA  |  Experimento completo")
+    print("=" * 55)
 
-    instance_path = "data/eil51.tsp"
+    raw_df, summary_df, convergence_data = run_all_experiments()
 
-    problem = load_instance(instance_path)
+    raw_df.to_csv(RAW_CSV, index=False)
+    print(f"\nResultados brutos salvos em: {RAW_CSV}")
 
-    print(f"\nInstância: {problem.name}")
-    print(f"Número de cidades: {problem.dimension}")
+    summary_df.to_csv(SUMMARY_CSV, index=False)
+    print(f"Sumário salvo em: {SUMMARY_CSV}")
 
-    print("\nExecutando RNN...")
+    generate_all_figures(raw_df, summary_df, convergence_data)
 
-    routes = repetitive_nearest_neighbor(
-        problem
-    )
+    print("\n" + "=" * 55)
+    print("SUMÁRIO DOS RESULTADOS")
+    print("=" * 55)
 
-    best_rnn = routes[0]
-
-    print(
-        f"Melhor custo RNN: "
-        f"{best_rnn['cost']:.2f}"
-    )
-
-    print("\nExecutando RNN-SA...")
-
-    _, sa_cost = simulated_annealing(
-        problem,
-        best_rnn["route"],
-    )
-
-    print(
-        f"Melhor custo RNN-SA: "
-        f"{sa_cost:.2f}"
-    )
-
-    print(
-        "\nExecutando "
-        "RNN-SA + Reheating..."
-    )
-
-    _, sa_reheating_cost = simulated_annealing(
-        problem,
-        best_rnn["route"],
-        reheating=True,
-        stagnation_limit=100,
-        reheating_factor=2.0,
-    )
-
-    print(
-        f"Melhor custo "
-        f"RNN-SA-Reheating: "
-        f"{sa_reheating_cost:.2f}"
-    )
-
-    print("\nComparação:")
-
-    print(
-        f"RNN              : "
-        f"{best_rnn['cost']:.2f}"
-    )
-
-    print(
-        f"RNN-SA           : "
-        f"{sa_cost:.2f}"
-    )
-
-    print(
-        f"RNN-SA-Reheating : "
-        f"{sa_reheating_cost:.2f}"
-    )
+    col_order = [
+        "instance", "algorithm",
+        "best", "mean", "std", "worst",
+        "optimal", "gap_best_%", "gap_mean_%",
+        "mean_time_s",
+    ]
+    print(summary_df[col_order].to_string(index=False))
 
 
 if __name__ == "__main__":
