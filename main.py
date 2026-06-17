@@ -1,7 +1,10 @@
-from tsp import load_instance, get_coordinates
+from src.rnn import repetitive_nearest_neighbor
+from src.sa import simulated_annealing
+from src.tsp import load_instance
 
 
 def main():
+
     print("=" * 50)
     print("TSP-RNN-SA")
     print("=" * 50)
@@ -13,14 +16,66 @@ def main():
     print(f"\nInstância: {problem.name}")
     print(f"Número de cidades: {problem.dimension}")
 
-    coordinates = get_coordinates(problem)
+    print("\nExecutando RNN...")
 
-    print("\nPrimeiras 5 cidades:")
+    routes = repetitive_nearest_neighbor(
+        problem
+    )
 
-    for city_id, coord in list(coordinates.items())[:5]:
-        print(f"Cidade {city_id}: {coord}")
+    best_rnn = routes[0]
 
-    print("\nProjeto configurado com sucesso!")
+    print(
+        f"Melhor custo RNN: "
+        f"{best_rnn['cost']:.2f}"
+    )
+
+    print("\nExecutando RNN-SA...")
+
+    _, sa_cost = simulated_annealing(
+        problem,
+        best_rnn["route"],
+    )
+
+    print(
+        f"Melhor custo RNN-SA: "
+        f"{sa_cost:.2f}"
+    )
+
+    print(
+        "\nExecutando "
+        "RNN-SA + Reheating..."
+    )
+
+    _, sa_reheating_cost = simulated_annealing(
+        problem,
+        best_rnn["route"],
+        reheating=True,
+        stagnation_limit=100,
+        reheating_factor=2.0,
+    )
+
+    print(
+        f"Melhor custo "
+        f"RNN-SA-Reheating: "
+        f"{sa_reheating_cost:.2f}"
+    )
+
+    print("\nComparação:")
+
+    print(
+        f"RNN              : "
+        f"{best_rnn['cost']:.2f}"
+    )
+
+    print(
+        f"RNN-SA           : "
+        f"{sa_cost:.2f}"
+    )
+
+    print(
+        f"RNN-SA-Reheating : "
+        f"{sa_reheating_cost:.2f}"
+    )
 
 
 if __name__ == "__main__":
