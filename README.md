@@ -29,15 +29,21 @@ O algoritmo estudado combina:
 
 Fluxo geral:
 
+```
 RNN → Solução Inicial → SA → Melhor Solução
+```
 
 ---
 
 ## Contribuição Proposta
 
-Adicionar um mecanismo de Reheating ao Simulated Annealing.
+Adicionar um mecanismo de **Reheating** ao Simulated Annealing.
 
 A ideia é aumentar temporariamente a temperatura quando o algoritmo permanecer várias iterações consecutivas sem melhorar a solução, permitindo escapar de mínimos locais.
+
+Parâmetros do Reheating:
+- `stagnation_limit`: número de iterações sem melhora que dispara o reheating
+- `reheating_factor`: fator multiplicativo aplicado à temperatura atual
 
 ---
 
@@ -46,83 +52,90 @@ A ideia é aumentar temporariamente a temperatura quando o algoritmo permanecer 
 ```text
 .
 ├── data/
+│   ├── eil51.tsp
+│   ├── berlin52.tsp
+│   ├── st70.tsp
+│   └── kroA100.tsp
 ├── docs/
+│   └── rnn-sa.pdf
 ├── results/
+│   ├── raw_results.csv
+│   ├── summary.csv
+│   └── figures/
 ├── src/
+│   ├── config.py       # parâmetros e instâncias
+│   ├── tsp.py          # carregamento TSPLIB
+│   ├── rnn.py          # Nearest Neighbor e RNN
+│   ├── operators.py    # operadores de vizinhança
+│   ├── sa.py           # Simulated Annealing + Reheating
+│   ├── experiments.py  # runner multi-instância / multi-rodada
+│   └── visualization.py
+├── main.py             # demo rápido (uma instância)
+├── run_experiments.py  # experimento completo
 ├── pyproject.toml
 └── README.md
 ```
 
+---
+
 ## Instâncias Utilizadas
 
-As instâncias TSP utilizadas são provenientes da TSPLIB.
+Instâncias da TSPLIB com soluções ótimas conhecidas:
 
-Instâncias atualmente utilizadas:
+| Instância | Cidades | Ótimo |
+|-----------|---------|-------|
+| eil51     | 51      | 426   |
+| berlin52  | 52      | 7542  |
+| st70      | 70      | 675   |
+| kroA100   | 100     | 21282 |
 
-- eil51
-- berlin52
-- st70
-
-Fonte das instâncias:
-
-https://github.com/mastqe/tsplib
-
-Originalmente derivadas da TSPLIB95:
-
-https://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/
+Fonte: <https://github.com/mastqe/tsplib>  
+Originalmente derivadas da TSPLIB95: <https://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/>
 
 ---
 
 ## Ambiente
 
-Python 3.12+
+Python 3.12+ com gerenciamento de dependências via `uv`.
 
-Gerenciamento de dependências:
-
-- uv
-
-Principais bibliotecas:
-
-- numpy
-- pandas
-- matplotlib
-- tsplib95
-- tqdm
+Principais bibliotecas: `numpy`, `pandas`, `matplotlib`, `tsplib95`, `tqdm`
 
 ---
 
-## Status
-
-- [x] Definição do tema
-- [x] Escolha do artigo
-- [x] Definição da contribuição
-- [x] Configuração do ambiente
-- [ ] Leitura das instâncias TSPLIB
-- [ ] Implementação do Nearest Neighbor
-- [ ] Implementação do RNN
-- [ ] Implementação do Simulated Annealing
-- [ ] Implementação do Reheating
-- [ ] Experimentos
-- [ ] Relatório final
-
-
 ## Execução
 
-### 1. Clonar o repositório
-
-```bash
-git clone <url-do-repositorio>
-cd tsp-rnn-sa
-```
-
-### 2. Instalar as dependências
+### 1. Instalar as dependências
 
 ```bash
 uv sync
 ```
 
-### 3. Executar o projeto
+### 2. Demo rápido (uma instância, uma rodada)
 
 ```bash
 python main.py
 ```
+
+### 3. Experimento completo (4 instâncias, 30 rodadas cada)
+
+```bash
+python run_experiments.py
+```
+
+Os resultados são salvos em `results/`:
+- `raw_results.csv` — todas as rodadas individuais
+- `summary.csv` — estatísticas por algoritmo/instância (best, mean, std, gap%)
+- `figures/` — gráficos prontos para o relatório
+
+---
+
+## Status
+
+- [x] Definição do tema e escolha do artigo
+- [x] Configuração do ambiente
+- [x] Implementação do Nearest Neighbor e RNN
+- [x] Implementação do Simulated Annealing
+- [x] Implementação do Reheating (contribuição)
+- [x] Framework experimental multi-instância / multi-rodada
+- [x] Geração de figuras (boxplots, convergência, comparação)
+- [ ] Relatório final
