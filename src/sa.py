@@ -50,6 +50,7 @@ def simulated_annealing(
     reheating=False,
     stagnation_limit=100,
     reheating_factor=2.0,
+    track_convergence=False,
 ):
     """
     Simulated Annealing.
@@ -74,6 +75,8 @@ def simulated_annealing(
     T = temperature
 
     stagnation = 0
+
+    history = [] if track_convergence else None
 
     for _ in range(iterations):
 
@@ -142,7 +145,12 @@ def simulated_annealing(
 
         T *= cooling
 
+        if history is not None:
+            history.append(best_cost)
+
         if T < 1e-12:
             break
 
+    if track_convergence:
+        return best_route, best_cost, history
     return best_route, best_cost
