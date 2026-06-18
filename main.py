@@ -13,7 +13,7 @@ def main():
     print("TSP-RNN-SA  |  Experimento completo")
     print("=" * 55)
 
-    raw_df, summary_df, convergence_data = run_all_experiments()
+    raw_df, summary_df, convergence_data, illustration_data = run_all_experiments()
 
     raw_df.to_csv(RAW_CSV, index=False)
     print(f"\nResultados brutos salvos em: {RAW_CSV}")
@@ -21,7 +21,7 @@ def main():
     summary_df.to_csv(SUMMARY_CSV, index=False)
     print(f"Sumário salvo em: {SUMMARY_CSV}")
 
-    generate_all_figures(raw_df, summary_df, convergence_data)
+    generate_all_figures(raw_df, summary_df, convergence_data, illustration_data)
 
     print("\n" + "=" * 55)
     print("SUMÁRIO DOS RESULTADOS")

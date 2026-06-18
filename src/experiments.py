@@ -9,13 +9,20 @@ from src.sa import simulated_annealing
 from src.tsp import load_instance
 
 
+ILLUSTRATION_INSTANCE = "eil51"
+
+
 def run_all_experiments():
     records = []
     convergence_data = {}
+    illustration_data = {}
 
     for instance_name, meta in INSTANCES.items():
         print(f"\n[{instance_name}] Carregando instância...")
         problem = load_instance(meta["path"])
+
+        if instance_name == ILLUSTRATION_INSTANCE:
+            illustration_data["problem"] = problem
 
         routes = repetitive_nearest_neighbor(problem)
         best_rnn = routes[0]
@@ -53,8 +60,10 @@ def run_all_experiments():
             elapsed = time.perf_counter() - t0
 
             if is_last:
-                _, cost, history = result
+                route, cost, history = result
                 convergence_data[instance_name]["RNN-SA"] = history
+                if instance_name == ILLUSTRATION_INSTANCE:
+                    illustration_data["RNN-SA"] = route
             else:
                 _, cost = result
 
@@ -81,8 +90,10 @@ def run_all_experiments():
             elapsed = time.perf_counter() - t0
 
             if is_last:
-                _, cost, history = result
+                route, cost, history = result
                 convergence_data[instance_name]["RNN-SA-Reheating"] = history
+                if instance_name == ILLUSTRATION_INSTANCE:
+                    illustration_data["RNN-SA-Reheating"] = route
             else:
                 _, cost = result
 
@@ -128,4 +139,4 @@ def run_all_experiments():
     summary_df["mean"] = summary_df["mean"].round(2)
     summary_df["std"] = summary_df["std"].round(2)
 
-    return raw_df, summary_df, convergence_data
+    return raw_df, summary_df, convergence_data, illustration_data

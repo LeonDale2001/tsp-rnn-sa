@@ -135,9 +135,44 @@ def generate_convergence_curves(convergence_data):
         print(f"  Salvo: {path}")
 
 
-def generate_all_figures(raw_df, summary_df, convergence_data):
+def generate_illustration(illustration_data):
+    _ensure_dir()
+
+    problem = illustration_data["problem"]
+    coords = problem.node_coords
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+    for ax, algo in zip(axes, ["RNN-SA", "RNN-SA-Reheating"]):
+        route = illustration_data[algo]
+
+        xs = [coords[c][0] for c in sorted(coords)]
+        ys = [coords[c][1] for c in sorted(coords)]
+        ax.scatter(xs, ys, s=15, color="black", zorder=3)
+
+        route_loop = list(route) + [route[0]]
+        ax.plot(
+            [coords[c][0] for c in route_loop],
+            [coords[c][1] for c in route_loop],
+            color=COLORS[algo],
+            linewidth=0.9,
+        )
+
+        ax.set_title(algo, fontsize=11)
+        ax.axis("off")
+
+    plt.tight_layout()
+    path = os.path.join(FIGURES_DIR, "illustration_eil51.png")
+    fig.savefig(path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  Salvo: {path}")
+
+
+def generate_all_figures(raw_df, summary_df, convergence_data, illustration_data=None):
     print("\nGerando figuras...")
     generate_best_costs_bar(summary_df)
     generate_boxplots(raw_df)
     generate_convergence_curves(convergence_data)
+    if illustration_data:
+        generate_illustration(illustration_data)
 
