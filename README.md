@@ -58,10 +58,12 @@ Parâmetros do Reheating:
 │   └── kroA100.tsp
 ├── docs/
 │   └── rnn-sa.pdf
-├── results/
+├── results/            # gerado ao rodar main.py (gitignored)
 │   ├── raw_results.csv
 │   ├── summary.csv
 │   └── figures/
+├── scripts/
+│   └── generate_illustration.py
 ├── src/
 │   ├── config.py       # parâmetros e instâncias
 │   ├── tsp.py          # carregamento TSPLIB
@@ -70,8 +72,7 @@ Parâmetros do Reheating:
 │   ├── sa.py           # Simulated Annealing + Reheating
 │   ├── experiments.py  # runner multi-instância / multi-rodada
 │   └── visualization.py
-├── main.py             # demo rápido (uma instância)
-├── run_experiments.py  # experimento completo
+├── main.py             # ponto de entrada do experimento completo
 ├── pyproject.toml
 └── README.md
 ```
@@ -110,16 +111,10 @@ Principais bibliotecas: `numpy`, `pandas`, `matplotlib`, `tsplib95`, `tqdm`
 uv sync
 ```
 
-### 2. Demo rápido (uma instância, uma rodada)
+### 2. Executar experimento completo (4 instâncias, 30 rodadas cada)
 
 ```bash
 python main.py
-```
-
-### 3. Experimento completo (4 instâncias, 30 rodadas cada)
-
-```bash
-python run_experiments.py
 ```
 
 Os resultados são salvos em `results/`:
@@ -138,4 +133,4 @@ Os resultados são salvos em `results/`:
 - [x] Implementação do Reheating (contribuição)
 - [x] Framework experimental multi-instância / multi-rodada
 - [x] Geração de figuras (boxplots, convergência, comparação)
-- [ ] Relatório final
+- [x] Relatório final

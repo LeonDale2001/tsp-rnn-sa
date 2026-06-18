@@ -1,6 +1,3 @@
-from math import inf
-
-
 def route_cost(problem, route):
     cost = 0
 
